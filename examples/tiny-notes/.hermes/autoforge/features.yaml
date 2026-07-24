@@ -1,0 +1,56 @@
+features:
+  - id: INFRA-001
+    title: Verify project skeleton
+    type: infrastructure
+    depends_on: []
+    acceptance:
+      - The project has a documented spec and feature list.
+      - The implementation directory is clear.
+    verification:
+      - Run scripts/check_autoforge_layout.py examples/tiny-notes.
+      - Confirm PASS.
+
+  - id: F001
+    title: Create a note
+    type: feature
+    depends_on:
+      - INFRA-001
+    acceptance:
+      - User can enter a note title and body.
+      - User can save the note.
+      - Saved note is stored in real persistence for a full implementation.
+    verification:
+      - Run lint/build/tests for the chosen stack.
+      - Verify through UI or API.
+      - Check that no mock/in-memory-only production path is used.
+
+  - id: F002
+    title: List notes
+    type: feature
+    depends_on:
+      - INFRA-001
+      - F001
+    acceptance:
+      - User can see saved notes in a list.
+      - Notes remain visible after refresh.
+    verification:
+      - Create unique note TEST_NOTE_<timestamp>.
+      - Refresh or restart app.
+      - Confirm note remains visible.
+
+  - id: F003
+    title: Delete a note
+    type: feature
+    depends_on:
+      - INFRA-001
+      - F001
+      - F002
+    acceptance:
+      - User can delete a note.
+      - Deleted note disappears from the list.
+      - Deleted note remains deleted after refresh/restart.
+    verification:
+      - Create unique note.
+      - Delete it.
+      - Refresh/restart.
+      - Confirm it does not return.

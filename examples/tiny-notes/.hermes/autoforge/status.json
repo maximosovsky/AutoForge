@@ -1,0 +1,12 @@
+{
+  "status": "complete",
+  "version": 1,
+  "sample": "tiny-notes",
+  "files_written": [
+    ".hermes/autoforge/app_spec.md",
+    ".hermes/autoforge/features.yaml",
+    ".hermes/autoforge/review_policy.md",
+    ".hermes/autoforge/worker_prompt.md"
+  ],
+  "feature_count": 4
+}
