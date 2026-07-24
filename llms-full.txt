@@ -1,0 +1,175 @@
+# AutoForge Hermes — Complete LLM Reference
+
+## Overview
+
+AutoForge Hermes is a reusable Hermes Agent skill package that adapts the AutoForge-style autonomous coding loop into native Hermes primitives.
+
+Core workflow:
+
+```text
+idea → product spec → features.yaml → validation → Hermes Kanban → builders → reviewers → release evidence
+```
+
+The project is not a fork of `AutoForgeAI/autoforge` and does not copy Claude Agent SDK implementation code. It is a workflow translation for Hermes Agent.
+
+- Author: Maxim Osovsky (https://www.wikidata.org/wiki/Q107189449)
+- Repository: https://github.com/maximosovsky/AutoForge
+- License: MIT
+
+## Main Skill
+
+Runtime skill path:
+
+```text
+hermes/skills/autoforge-hermes/SKILL.md
+```
+
+Skill name:
+
+```text
+autoforge-hermes
+```
+
+Use the skill when a user asks to design, specify, or build a project using a spec-first AutoForge-style Hermes workflow.
+
+## Install
+
+Direct install from a public GitHub raw URL:
+
+```bash
+hermes skills install https://raw.githubusercontent.com/maximosovsky/AutoForge/main/hermes/skills/autoforge-hermes/SKILL.md
+```
+
+Full package install:
+
+```bash
+git clone https://github.com/maximosovsky/AutoForge.git
+cd AutoForge
+python hermes/scripts/validate-skill.py
+bash hermes/scripts/install-local.sh
+```
+
+Reload skills after install:
+
+```text
+/reload-skills
+```
+
+or start a new Hermes session.
+
+## Artifact Contract
+
+A target project using this workflow should contain:
+
+```text
+.hermes/autoforge/app_spec.md
+.hermes/autoforge/features.yaml
+.hermes/autoforge/review_policy.md
+.hermes/autoforge/worker_prompt.md
+.hermes/autoforge/status.json
+```
+
+### app_spec.md
+
+Product source of truth: goal, users, journeys, screens/routes, data model, permissions, integrations, design direction, non-goals, and success criteria.
+
+### features.yaml
+
+Feature graph imported into Hermes Kanban. Every feature should have:
+
+- stable `id`;
+- `title`;
+- `type`;
+- `depends_on` list;
+- `acceptance` criteria;
+- `verification` steps.
+
+### review_policy.md
+
+Completion gates: lint/format, typecheck when applicable, build, tests, browser/API checks, persistence checks for data features, no unexplained mock/in-memory production stores, security/access review, git diff review, and Kanban evidence.
+
+### worker_prompt.md
+
+Instructions for builder workers: read spec/features/review policy, work on one assigned feature, implement the smallest complete change, verify before completion, and block honestly if needed.
+
+### status.json
+
+Machine-readable marker that the spec phase is complete.
+
+## Repository Structure
+
+| Path | Purpose |
+|------|---------|
+| `README.md` | Public GitHub cover page. |
+| `ARCHITECTURE.md` | AutoForge-to-Hermes mapping and workflow architecture. |
+| `TRY_IT.md` | Step-by-step smoke test and Kanban import guide. |
+| `hermes/skills/autoforge-hermes/SKILL.md` | Runtime Hermes skill. |
+| `hermes/scripts/validate-skill.py` | Skill package validator. |
+| `hermes/scripts/install-local.sh` | Local installer for the full skill folder. |
+| `scripts/check_autoforge_layout.py` | Validates `.hermes/autoforge` project artifacts. |
+| `scripts/import_features_to_kanban.py` | Imports features into Hermes Kanban. |
+| `examples/tiny-notes/.hermes/autoforge/` | Minimal smoke sample. |
+| `tests/` | Unit tests for importer and skill package contract. |
+
+## Smoke Test
+
+```bash
+python hermes/scripts/validate-skill.py
+python scripts/check_autoforge_layout.py examples/tiny-notes
+python scripts/import_features_to_kanban.py examples/tiny-notes \
+  --board autoforge-tiny-notes \
+  --name 'AutoForge Tiny Notes' \
+  --idempotency-prefix autoforge-tiny \
+  --dry-run
+python -m unittest discover -s tests -q
+```
+
+Expected:
+
+```text
+PASS ... SKILL.md is a valid autoforge-hermes Hermes skill
+PASS examples\tiny-notes has 4 AutoForge-style features and valid dependencies
+Ran 7 tests ... OK
+```
+
+## Kanban Import
+
+The importer validates `features.yaml`, creates one Hermes Kanban card per feature, adds idempotency keys, and links dependencies.
+
+Example:
+
+```bash
+python scripts/import_features_to_kanban.py examples/tiny-notes \
+  --board autoforge-tiny-notes \
+  --name 'AutoForge Tiny Notes' \
+  --idempotency-prefix autoforge-tiny \
+  --json
+```
+
+## Design Rules
+
+- Spec comes before implementation.
+- No implementation before user approval unless explicitly requested.
+- Builders work one ready feature at a time.
+- Reviewers verify independently.
+- Tasks are marked complete only with evidence.
+- UI work requires browser verification.
+- CRUD/data work requires refresh/restart persistence verification.
+- Mock/in-memory production data paths must be justified or removed.
+
+## Roadmap
+
+Completed:
+
+- AutoForge-to-Hermes mapping.
+- Tiny Notes smoke artifact set.
+- Layout/dependency validator.
+- Hermes Kanban importer.
+- Reusable Hermes skill package.
+- Public README, install instructions, license, and LLM discovery files.
+
+Planned:
+
+- Project scaffold/template generator.
+- CI workflow for validation and tests.
+- Optional dispatcher examples for bounded builder/reviewer workers.

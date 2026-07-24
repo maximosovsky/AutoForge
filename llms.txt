@@ -1,0 +1,16 @@
+# AutoForge Hermes
+
+> A reusable Hermes skill that turns product ideas into spec-first, Kanban-driven agent workflows.
+
+## About
+
+AutoForge Hermes packages an AutoForge-style product workflow for Hermes Agent. It defines a reusable `autoforge-hermes` skill, `.hermes/autoforge` artifact contract, validation scripts, a Kanban importer, and a tiny smoke sample. The workflow is spec-first: product questions and `features.yaml` come before implementation, and builder/reviewer work is gated by evidence.
+
+- Author: [Maxim Osovsky](https://www.wikidata.org/wiki/Q107189449)
+- URL: https://github.com/maximosovsky/AutoForge
+- License: MIT
+
+## Docs
+
+- [Full documentation](https://raw.githubusercontent.com/maximosovsky/AutoForge/main/llms-full.txt): Complete project reference, install paths, structure, and workflow
+- [Hermes skill](https://raw.githubusercontent.com/maximosovsky/AutoForge/main/hermes/skills/autoforge-hermes/SKILL.md): Runtime `autoforge-hermes` skill

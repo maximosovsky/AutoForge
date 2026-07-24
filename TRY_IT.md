@@ -1,6 +1,23 @@
 # Try the AutoForge → Hermes workflow
 
-This repo is currently a workflow map, not a full plugin. The fastest way to prove the idea works is to run a small smoke test: create a tiny spec, validate the artifact layout, then optionally create a Hermes Kanban board from the sample tasks.
+This repo is now a workflow map plus a packaged Hermes skill. The fastest way to prove the idea works is to validate/install the skill, run a small smoke test, validate the artifact layout, then optionally create a Hermes Kanban board from the sample tasks.
+
+## A. Validate and install the Hermes skill
+
+Validate the packaged skill:
+
+```bash
+cd /c/100_star/AutoForge
+python hermes/scripts/validate-skill.py
+```
+
+Install into the active Hermes home:
+
+```bash
+bash hermes/scripts/install-local.sh
+```
+
+Then start a new Hermes session or run `/reload-skills` before expecting `autoforge-hermes` to be auto-discovered.
 
 ## 0. Confirm Hermes can use the intended model
 
