@@ -67,12 +67,21 @@ F2=$(hermes kanban create 'F002: list notes' \
   --body 'Acceptance: user can see saved notes after refresh. Verification includes persistence check.' \
   --idempotency-key autoforge-tiny-F002 --json | python -c "import sys,json; print(json.load(sys.stdin)['id'])")
 
+F3=$(hermes kanban create 'F003: delete a note' \
+  --workspace dir:/c/100_star/AutoForge/examples/tiny-notes \
+  --body 'Acceptance: user can delete a note and it remains deleted after refresh/restart.' \
+  --idempotency-key autoforge-tiny-F003 --json | python -c "import sys,json; print(json.load(sys.stdin)['id'])")
+
 hermes kanban link "$INFRA" "$F1" || true
 hermes kanban link "$INFRA" "$F2" || true
+hermes kanban link "$F1" "$F2" || true
+hermes kanban link "$INFRA" "$F3" || true
+hermes kanban link "$F1" "$F3" || true
+hermes kanban link "$F2" "$F3" || true
 hermes kanban list
 ```
 
-Expected: one board with three cards; feature cards depend on the infrastructure card.
+Expected: one board with four cards; `INFRA-001` is ready, and `F001/F002/F003` remain todo until their dependencies are completed.
 
 ## 3. Optional: run a one-shot initializer/checker
 
