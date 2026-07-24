@@ -39,46 +39,32 @@ python scripts/check_autoforge_layout.py examples/tiny-notes
 
 Expected: `PASS`.
 
-## 2. Optional: create a Hermes Kanban board
+## 2. Import features into a Hermes Kanban board
 
-This proves the AutoForge feature list can be represented in Hermes Kanban.
+This proves the AutoForge feature list can be represented in Hermes Kanban. Use the importer so the process is repeatable and not a hand-written sequence of `kanban create` calls.
+
+Preview what will be imported:
 
 ```bash
 cd /c/100_star/AutoForge
-hermes kanban boards create autoforge-tiny-notes --name 'AutoForge Tiny Notes' --default-workdir /c/100_star/AutoForge/examples/tiny-notes || true
-hermes kanban boards switch autoforge-tiny-notes
+python scripts/import_features_to_kanban.py examples/tiny-notes \
+  --board autoforge-tiny-notes \
+  --name 'AutoForge Tiny Notes' \
+  --idempotency-prefix autoforge-tiny \
+  --dry-run
 ```
 
-Create the infrastructure and feature cards:
+Import into Kanban:
 
 ```bash
-INFRA=$(hermes kanban create 'INFRA-001: verify project skeleton' \
-  --workspace dir:/c/100_star/AutoForge/examples/tiny-notes \
-  --body 'Verify package/app structure exists; no generated code is required for this smoke test.' \
-  --idempotency-key autoforge-tiny-INFRA-001 --json | python -c "import sys,json; print(json.load(sys.stdin)['id'])")
+python scripts/import_features_to_kanban.py examples/tiny-notes \
+  --board autoforge-tiny-notes \
+  --name 'AutoForge Tiny Notes' \
+  --idempotency-prefix autoforge-tiny \
+  --json
 
-F1=$(hermes kanban create 'F001: create a note' \
-  --workspace dir:/c/100_star/AutoForge/examples/tiny-notes \
-  --body 'Acceptance: user can create a note with title and body. Verification: unit/browser check in a real app.' \
-  --idempotency-key autoforge-tiny-F001 --json | python -c "import sys,json; print(json.load(sys.stdin)['id'])")
-
-F2=$(hermes kanban create 'F002: list notes' \
-  --workspace dir:/c/100_star/AutoForge/examples/tiny-notes \
-  --body 'Acceptance: user can see saved notes after refresh. Verification includes persistence check.' \
-  --idempotency-key autoforge-tiny-F002 --json | python -c "import sys,json; print(json.load(sys.stdin)['id'])")
-
-F3=$(hermes kanban create 'F003: delete a note' \
-  --workspace dir:/c/100_star/AutoForge/examples/tiny-notes \
-  --body 'Acceptance: user can delete a note and it remains deleted after refresh/restart.' \
-  --idempotency-key autoforge-tiny-F003 --json | python -c "import sys,json; print(json.load(sys.stdin)['id'])")
-
-hermes kanban link "$INFRA" "$F1" || true
-hermes kanban link "$INFRA" "$F2" || true
-hermes kanban link "$F1" "$F2" || true
-hermes kanban link "$INFRA" "$F3" || true
-hermes kanban link "$F1" "$F3" || true
-hermes kanban link "$F2" "$F3" || true
 hermes kanban list
+hermes kanban stats
 ```
 
 Expected: one board with four cards; `INFRA-001` is ready, and `F001/F002/F003` remain todo until their dependencies are completed.
@@ -98,7 +84,7 @@ Expected: Hermes should summarize `INFRA-001 → F001/F002/F003` and mention lin
 A real Hermes AutoForge implementation would add:
 
 - a reusable `autoforge-hermes` skill;
-- a parser that imports `features.yaml` into Kanban automatically;
+- a parser/importer that imports `features.yaml` into Kanban automatically (`scripts/import_features_to_kanban.py` provides the first smoke implementation);
 - dedicated worker profiles: `autoforge-initializer`, `autoforge-builder`, `autoforge-reviewer`, `autoforge-tester`;
 - a dispatcher or cron/kanban loop that runs bounded workers;
 - final release/review gates.
