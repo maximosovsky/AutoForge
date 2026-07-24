@@ -7,7 +7,7 @@ This repo is now a workflow map plus a packaged Hermes skill. The fastest way to
 Validate the packaged skill:
 
 ```bash
-cd /c/100_star/AutoForge
+cd AutoForge
 python hermes/scripts/validate-skill.py
 ```
 
@@ -24,7 +24,7 @@ Then start a new Hermes session or run `/reload-skills` before expecting `autofo
 From this repo:
 
 ```bash
-cd /c/100_star/AutoForge
+cd AutoForge
 hermes chat -q 'Ответь одним словом: OK' --provider custom:azure-max -m gpt-5.5 --quiet
 ```
 
@@ -63,7 +63,7 @@ This proves the AutoForge feature list can be represented in Hermes Kanban. Use 
 Preview what will be imported:
 
 ```bash
-cd /c/100_star/AutoForge
+cd AutoForge
 python scripts/import_features_to_kanban.py examples/tiny-notes \
   --board autoforge-tiny-notes \
   --name 'AutoForge Tiny Notes' \

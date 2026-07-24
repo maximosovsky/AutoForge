@@ -25,7 +25,7 @@ Use it to prevent code-first drift. The deliverable of the first phase is not ap
 This skill is distributed from the repository:
 
 ```text
-C:/100_star/AutoForge
+https://github.com/maximosovsky/AutoForge
 ```
 
 ## When to Use
@@ -238,7 +238,7 @@ Use this shape:
 
 ## Kanban Import
 
-Inside `C:/100_star/AutoForge`, use the included importer:
+Inside a cloned `AutoForge` repository, use the included importer:
 
 ```bash
 python scripts/import_features_to_kanban.py <project-dir> \
