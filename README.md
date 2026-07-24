@@ -38,7 +38,7 @@ The skill is intentionally spec-first: it asks product questions, writes `.herme
 | Feature | Description |
 |---------|-------------|
 | Hermes skill package | Ships `hermes/skills/autoforge-hermes/SKILL.md` with a reusable spec → Kanban → build/review workflow. |
-| Public install path | Supports direct `hermes skills install` from the raw GitHub `SKILL.md` URL once the repository is public. |
+| Public install path | Supports a verified `git clone` + installer flow from a public GitHub repository. |
 | Full local install path | Includes `hermes/scripts/install-local.sh` to copy the complete skill folder into `$HERMES_HOME/skills/software-development/`. |
 | Spec artifact contract | Defines `.hermes/autoforge/app_spec.md`, `features.yaml`, `review_policy.md`, `worker_prompt.md`, and `status.json`. |
 | Kanban importer | Converts `features.yaml` into Hermes Kanban cards with idempotency keys and dependency links. |
@@ -50,19 +50,22 @@ The skill is intentionally spec-first: it asks product questions, writes `.herme
 
 ## 🚀 Quick Start
 
-Install only the skill from a public GitHub URL:
-
-```bash
-hermes skills install https://raw.githubusercontent.com/maximosovsky/AutoForge/main/hermes/skills/autoforge-hermes/SKILL.md
-```
-
-Or install the full package with helper scripts:
+Install the full package with helper scripts:
 
 ```bash
 git clone https://github.com/maximosovsky/AutoForge.git
 cd AutoForge
 python hermes/scripts/validate-skill.py
 bash hermes/scripts/install-local.sh
+```
+
+Or install the single `SKILL.md` manually from the public raw URL:
+
+```bash
+HERMES_HOME="${HERMES_HOME:-$HOME/.hermes}"
+mkdir -p "$HERMES_HOME/skills/software-development/autoforge-hermes"
+curl -fsSL https://raw.githubusercontent.com/maximosovsky/AutoForge/main/hermes/skills/autoforge-hermes/SKILL.md \
+  > "$HERMES_HOME/skills/software-development/autoforge-hermes/SKILL.md"
 ```
 
 Then restart Hermes or run:

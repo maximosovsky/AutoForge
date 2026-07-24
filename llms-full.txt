@@ -34,19 +34,22 @@ Use the skill when a user asks to design, specify, or build a project using a sp
 
 ## Install
 
-Direct install from a public GitHub raw URL:
-
-```bash
-hermes skills install https://raw.githubusercontent.com/maximosovsky/AutoForge/main/hermes/skills/autoforge-hermes/SKILL.md
-```
-
-Full package install:
+Verified full package install:
 
 ```bash
 git clone https://github.com/maximosovsky/AutoForge.git
 cd AutoForge
 python hermes/scripts/validate-skill.py
 bash hermes/scripts/install-local.sh
+```
+
+Single-file raw install:
+
+```bash
+HERMES_HOME="${HERMES_HOME:-$HOME/.hermes}"
+mkdir -p "$HERMES_HOME/skills/software-development/autoforge-hermes"
+curl -fsSL https://raw.githubusercontent.com/maximosovsky/AutoForge/main/hermes/skills/autoforge-hermes/SKILL.md \
+  > "$HERMES_HOME/skills/software-development/autoforge-hermes/SKILL.md"
 ```
 
 Reload skills after install:
