@@ -29,7 +29,7 @@ AutoForgeAI popularized a useful autonomous-coding pattern: interview the user, 
 
 Hermes already has the primitives needed for the same workflow: project context, skills, file/terminal/browser tools, Kanban, delegation, cron, session search, and review skills. This repository packages that translation as a reusable Hermes skill named `autoforge-hermes`.
 
-The skill is intentionally spec-first: it asks product questions, writes `.hermes/autoforge/*` artifacts, validates `features.yaml`, imports tasks into Hermes Kanban, and stops before implementation unless the user explicitly approves build work.
+The skill is intentionally spec-first: it asks product questions, writes `.hermes/autoforge/*` artifacts including a visual `system_view.md`, validates the project contract, imports tasks into Hermes Kanban, and stops before implementation unless the user explicitly approves build work.
 
 ---
 
@@ -40,7 +40,7 @@ The skill is intentionally spec-first: it asks product questions, writes `.herme
 | Hermes skill package | Ships `hermes/skills/autoforge-hermes/SKILL.md` with a reusable spec → Kanban → build/review workflow. |
 | Public install path | Supports a verified `git clone` + installer flow from a public GitHub repository. |
 | Full local install path | Includes `hermes/scripts/install-local.sh` to copy the complete skill folder into `$HERMES_HOME/skills/software-development/`. |
-| Spec artifact contract | Defines `.hermes/autoforge/app_spec.md`, `features.yaml`, `review_policy.md`, `worker_prompt.md`, and `status.json`. |
+| Spec artifact contract | Defines `.hermes/autoforge/app_spec.md`, `system_view.md`, `features.yaml`, `review_policy.md`, `worker_prompt.md`, and `status.json`. |
 | Kanban importer | Converts `features.yaml` into Hermes Kanban cards with idempotency keys and dependency links. |
 | Smoke sample | Includes `examples/tiny-notes` with four ordered features for validation and Kanban import tests. |
 | Quality gates | Requires lint/build/tests/browser/API/persistence checks where applicable before a task can be marked done. |
@@ -120,7 +120,7 @@ $HERMES_HOME/skills/software-development/autoforge-hermes
 | `hermes/skills/autoforge-hermes/SKILL.md` | Runtime Hermes skill loaded by `/skill autoforge-hermes` or automatic skill matching. |
 | `hermes/scripts/validate-skill.py` | Validates frontmatter, required sections, artifact names, and install contract. |
 | `hermes/scripts/install-local.sh` | Installs the skill folder into the active Hermes home. |
-| `scripts/scaffold_project.py` | Creates the five `.hermes/autoforge` artifact files for a new target project. |
+| `scripts/scaffold_project.py` | Creates the six `.hermes/autoforge` artifact files for a new target project. |
 | `scripts/check_autoforge_layout.py` | Validates a target project's `.hermes/autoforge` artifact layout. |
 | `scripts/import_features_to_kanban.py` | Imports `features.yaml` into Hermes Kanban with dependencies. |
 | `examples/tiny-notes/.hermes/autoforge/` | Minimal smoke project demonstrating the artifact contract. |
@@ -130,8 +130,9 @@ The core workflow:
 ```text
 idea
 └── app_spec.md
+    ├── system_view.md
     └── features.yaml
-        ├── validate layout/dependencies
+        ├── validate layout/dependencies/system view
         ├── import to Hermes Kanban
         └── builders/reviewers work one verified task at a time
 ```
@@ -173,6 +174,7 @@ AutoForge/
 │   └── tiny-notes/
 │       └── .hermes/autoforge/
 │           ├── app_spec.md
+│           ├── system_view.md
 │           ├── features.yaml
 │           ├── review_policy.md
 │           ├── status.json

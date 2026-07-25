@@ -98,6 +98,90 @@ def features_yaml() -> str:
 """
 
 
+def system_view(name: str) -> str:
+    return f"""# {name} system view
+
+## System boundary
+
+TODO: state what is inside this project and what is outside it.
+
+## Main elements
+
+| Element | Role | Owns data? | Notes |
+|---|---|---:|---|
+| User | TODO | no | Primary actor. |
+| User interface | TODO | no | Screens/routes from app_spec.md. |
+| Application logic | TODO | no | Backend/API/local logic. |
+| Persistent store | TODO | yes | Database/files/local storage as appropriate. |
+
+## Component diagram
+
+```mermaid
+flowchart TD
+  User[User]
+  UI[User interface]
+  App[Application logic]
+  Store[(Persistent store)]
+
+  User --> UI
+  UI --> App
+  App --> Store
+
+  classDef actor fill:#eff6ff,stroke:#3b82f6,color:#000
+  classDef ui fill:#f5f3ff,stroke:#8b5cf6,color:#000
+  classDef logic fill:#ecfeff,stroke:#06b6d4,color:#000
+  classDef data fill:#f8fafc,stroke:#94a3b8,color:#000
+  class User actor
+  class UI ui
+  class App logic
+  class Store data
+```
+
+## Data flow
+
+```mermaid
+sequenceDiagram
+  participant U as User
+  participant UI as User interface
+  participant App as Application logic
+  participant Store as Persistent store
+
+  U->>UI: performs approved action
+  UI->>App: sends request or local event
+  App->>Store: reads/writes data
+  Store-->>App: result
+  App-->>UI: updated state
+  UI-->>U: visible feedback
+```
+
+## Integration points
+
+- Auth: TODO or none.
+- Payments: TODO or none.
+- Email: TODO or none.
+- Storage: TODO.
+- LLM/API: TODO or none.
+- Analytics: TODO or none.
+
+## Architectural constraints
+
+- Persistence: TODO.
+- Privacy: TODO.
+- Security: TODO.
+- Deployment: TODO.
+- Performance: TODO.
+- Offline/real-time: TODO or out of scope.
+
+## Diagram standards
+
+- Use `flowchart TD` or `flowchart LR` for component diagrams.
+- Use `-->` for main flows and `-. label .->` for dependencies; never use `==>`.
+- Use light pastel `classDef` fills with colored strokes and black text.
+- Use Mermaid subgraphs only for real bounded subsystems; keep nesting shallow.
+- If emoji are used in Mermaid labels, prefer HTML entities instead of raw Unicode emoji.
+"""
+
+
 def review_policy() -> str:
     return """# Review policy
 
@@ -123,6 +207,7 @@ def worker_prompt() -> str:
 Read before work:
 
 - .hermes/autoforge/app_spec.md
+- .hermes/autoforge/system_view.md
 - .hermes/autoforge/features.yaml
 - .hermes/autoforge/review_policy.md
 - .hermes/autoforge/status.json
@@ -135,6 +220,7 @@ def scaffold(project_dir: Path, name: str, goal: str, *, force: bool = False) ->
     base = project_dir / ".hermes" / "autoforge"
     files = {
         "app_spec.md": app_spec(name, goal),
+        "system_view.md": system_view(name),
         "features.yaml": features_yaml(),
         "review_policy.md": review_policy(),
         "worker_prompt.md": worker_prompt(),

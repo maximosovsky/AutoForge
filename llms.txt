@@ -4,7 +4,7 @@
 
 ## About
 
-AutoForge Hermes packages an AutoForge-style product workflow for Hermes Agent. It defines a reusable `autoforge-hermes` skill, `.hermes/autoforge` artifact contract, validation scripts, a scaffold helper, a Kanban importer, CI, and a tiny smoke sample. The workflow is spec-first: product questions and `features.yaml` come before implementation, and builder/reviewer work is gated by evidence.
+AutoForge Hermes packages an AutoForge-style product workflow for Hermes Agent. It defines a reusable `autoforge-hermes` skill, `.hermes/autoforge` artifact contract, validation scripts, a scaffold helper, a Kanban importer, CI, and a tiny smoke sample. The workflow is spec-first: product questions, `app_spec.md`, `system_view.md`, and `features.yaml` come before implementation, and builder/reviewer work is gated by evidence.
 
 - Author: [Maxim Osovsky](https://www.wikidata.org/wiki/Q107189449)
 - URL: https://github.com/maximosovsky/AutoForge

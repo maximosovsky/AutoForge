@@ -2,6 +2,84 @@
 
 This document records how the public `AutoForgeAI/autoforge` architecture maps to a Hermes-native workflow. The repository is not a fork of AutoForgeAI/autoforge and does not copy Claude Agent SDK implementation code.
 
+## System view
+
+```mermaid
+flowchart TD
+  User[User / product owner]
+  Skill[autoforge-hermes skill]
+  Scaffold[scaffold_project.py]
+  Artifacts[.hermes/autoforge artifacts]
+  Spec[app_spec.md]
+  Features[features.yaml]
+  Policy[review_policy.md]
+  WorkerPrompt[worker_prompt.md]
+  Status[status.json]
+  Validator[check_autoforge_layout.py]
+  Importer[import_features_to_kanban.py]
+  Kanban[Hermes Kanban board]
+  Builder[Builder worker]
+  Reviewer[Reviewer worker]
+
+  User --> Skill
+  Skill --> Artifacts
+  Scaffold --> Artifacts
+  Artifacts --> Spec
+  Artifacts --> Features
+  Artifacts --> Policy
+  Artifacts --> WorkerPrompt
+  Artifacts --> Status
+  Artifacts --> Validator
+  Validator --> Importer
+  Features --> Importer
+  Importer --> Kanban
+  Kanban --> Builder
+  Builder --> Reviewer
+  Reviewer --> Kanban
+```
+
+## Workflow sequence
+
+```mermaid
+sequenceDiagram
+  participant U as User
+  participant H as Hermes + autoforge-hermes
+  participant A as .hermes/autoforge artifacts
+  participant V as Validator
+  participant K as Hermes Kanban
+  participant B as Builder worker
+  participant R as Reviewer worker
+
+  U->>H: product idea or project request
+  H->>U: compact product questions
+  H->>A: write app_spec.md, features.yaml, review_policy.md, worker_prompt.md, status.json
+  H->>V: validate artifact contract
+  V-->>H: PASS or actionable failures
+  H->>K: import features as dependency-linked tasks
+  H->>U: report board state and wait for build approval
+  U->>B: approve / assign one ready task
+  B->>B: implement smallest complete change and run gates
+  B->>R: request independent review
+  R->>K: complete with evidence or block with reproduction steps
+```
+
+## Element responsibilities
+
+| Element | Responsibility |
+|---|---|
+| `autoforge-hermes` skill | Keeps Hermes in spec-first mode and prevents implementation before approval. |
+| `app_spec.md` | Product source of truth: goal, users, journeys, screens, data, privacy, integrations, design, non-goals, success criteria. |
+| `features.yaml` | Machine-readable feature graph with dependencies, acceptance criteria, and verification steps. |
+| `review_policy.md` | Completion gates for build, tests, browser/API checks, persistence, security, and evidence. |
+| `worker_prompt.md` | Behavioral contract for bounded builder/reviewer workers. |
+| `status.json` | Spec-phase completion marker and artifact inventory. |
+| `scaffold_project.py` | Creates the minimal valid artifact set for a new target project. |
+| `check_autoforge_layout.py` | Validates the artifact contract before import or implementation. |
+| `import_features_to_kanban.py` | Bridges `features.yaml` into Hermes Kanban tasks and dependency links. |
+| Hermes Kanban | Durable execution queue for ready, blocked, completed, and regression tasks. |
+| Builder worker | Implements one ready feature at a time and records verification evidence. |
+| Reviewer worker | Independently checks completed work and passes or blocks with concrete evidence. |
+
 ## Core pattern
 
 ```text

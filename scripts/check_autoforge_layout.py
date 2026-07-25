@@ -10,6 +10,7 @@ except Exception:  # pragma: no cover
 
 REQUIRED = [
     ".hermes/autoforge/app_spec.md",
+    ".hermes/autoforge/system_view.md",
     ".hermes/autoforge/features.yaml",
     ".hermes/autoforge/review_policy.md",
     ".hermes/autoforge/worker_prompt.md",
@@ -28,6 +29,15 @@ REQUIRED_APP_SPEC_SECTIONS = [
     "Design direction",
     "Non-goals",
     "Success criteria",
+]
+
+REQUIRED_SYSTEM_VIEW_SECTIONS = [
+    "System boundary",
+    "Main elements",
+    "Component diagram",
+    "Data flow",
+    "Integration points",
+    "Architectural constraints",
 ]
 
 
@@ -124,14 +134,31 @@ def feature_list_errors(features) -> list[str]:
 
 
 def app_spec_errors(path: Path) -> list[str]:
+    return markdown_heading_errors(path, REQUIRED_APP_SPEC_SECTIONS, "app_spec.md")
+
+
+def system_view_errors(path: Path) -> list[str]:
+    errors = markdown_heading_errors(path, REQUIRED_SYSTEM_VIEW_SECTIONS, "system_view.md")
+    text = path.read_text(encoding="utf-8")
+    mermaid_blocks = re.findall(r"```mermaid\s*(.*?)```", text, flags=re.DOTALL)
+    if not mermaid_blocks:
+        errors.append("system_view.md must include at least one Mermaid diagram fence")
+    if any("==>" in block for block in mermaid_blocks):
+        errors.append("system_view.md must use --> arrows, not ==> arrows")
+    if not any("classDef" in block for block in mermaid_blocks):
+        errors.append("system_view.md Mermaid diagrams must include classDef style tokens")
+    return errors
+
+
+def markdown_heading_errors(path: Path, required_sections: list[str], label: str) -> list[str]:
     text = path.read_text(encoding="utf-8")
     headings = {
         match.group(1).strip().lower()
         for match in re.finditer(r"^#{1,6}\s+(.+?)\s*$", text, flags=re.MULTILINE)
     }
     return [
-        f"app_spec.md missing section heading: {section}"
-        for section in REQUIRED_APP_SPEC_SECTIONS
+        f"{label} missing section heading: {section}"
+        for section in required_sections
         if section.lower() not in headings
     ]
 
@@ -168,6 +195,7 @@ def main() -> int:
     errors: list[str] = []
     errors.extend(feature_list_errors(features))
     errors.extend(app_spec_errors(root / ".hermes/autoforge/app_spec.md"))
+    errors.extend(system_view_errors(root / ".hermes/autoforge/system_view.md"))
     errors.extend(status_errors(root / ".hermes/autoforge/status.json", len(features)))
     if errors:
         return fail(errors)

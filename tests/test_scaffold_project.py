@@ -18,10 +18,11 @@ class ScaffoldProjectTests(unittest.TestCase):
             project = Path(tmp) / "demo-app"
             written = scaffold_project.scaffold(project, "Demo App", "Test the scaffold.")
 
-            self.assertEqual(len(written), 5)
+            self.assertEqual(len(written), 6)
             status = json.loads((project / ".hermes/autoforge/status.json").read_text(encoding="utf-8"))
             self.assertEqual(status["project"], "demo-app")
             self.assertEqual(status["feature_count"], 2)
+            self.assertTrue((project / ".hermes/autoforge/system_view.md").exists())
 
             completed = subprocess.run(
                 [sys.executable, str(SCRIPTS / "check_autoforge_layout.py"), str(project)],

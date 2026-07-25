@@ -42,6 +42,7 @@ class HermesSkillProductTests(unittest.TestCase):
         text = SKILL_MD.read_text(encoding="utf-8")
         for artifact in [
             ".hermes/autoforge/app_spec.md",
+            ".hermes/autoforge/system_view.md",
             ".hermes/autoforge/features.yaml",
             ".hermes/autoforge/review_policy.md",
             ".hermes/autoforge/worker_prompt.md",

@@ -48,6 +48,31 @@ None.
 ## Success criteria
 PASS.
 """, encoding="utf-8")
+    (spec_dir / "system_view.md").write_text("""# Demo system view
+
+## System boundary
+Inside/outside.
+
+## Main elements
+Elements.
+
+## Component diagram
+```mermaid
+flowchart TD
+  A[A] --> B[B]
+  classDef base fill:#ffffff,stroke:#e5e7eb,color:#000
+  class A,B base
+```
+
+## Data flow
+Flow.
+
+## Integration points
+Integrations.
+
+## Architectural constraints
+Constraints.
+""", encoding="utf-8")
     (spec_dir / "features.yaml").write_text(features, encoding="utf-8")
     (spec_dir / "review_policy.md").write_text("# Review policy\n\n- tests pass\n", encoding="utf-8")
     (spec_dir / "worker_prompt.md").write_text("# Worker prompt\n", encoding="utf-8")
@@ -57,6 +82,7 @@ PASS.
         "project": "demo",
         "files_written": [
             ".hermes/autoforge/app_spec.md",
+            ".hermes/autoforge/system_view.md",
             ".hermes/autoforge/features.yaml",
             ".hermes/autoforge/review_policy.md",
             ".hermes/autoforge/worker_prompt.md",
@@ -120,6 +146,7 @@ class CheckAutoForgeLayoutTests(unittest.TestCase):
                     "project": "demo",
                     "files_written": [
                         ".hermes/autoforge/app_spec.md",
+                        ".hermes/autoforge/system_view.md",
                         ".hermes/autoforge/features.yaml",
                         ".hermes/autoforge/review_policy.md",
                         ".hermes/autoforge/worker_prompt.md",
@@ -152,6 +179,7 @@ class CheckAutoForgeLayoutTests(unittest.TestCase):
                     "status": "complete",
                     "files_written": [
                         ".hermes/autoforge/app_spec.md",
+                        ".hermes/autoforge/system_view.md",
                         ".hermes/autoforge/features.yaml",
                         ".hermes/autoforge/review_policy.md",
                         ".hermes/autoforge/worker_prompt.md",
@@ -192,6 +220,73 @@ Integrations, Design direction, Non-goals, and Success criteria, but not as head
 
         self.assertNotEqual(completed.returncode, 0)
         self.assertIn("app_spec.md missing section heading: Project name", completed.stdout)
+
+    def test_rejects_missing_system_view(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp)
+            write_project(
+                project,
+                features="""features:
+  - id: F001
+    title: Complete feature
+    type: feature
+    depends_on: []
+    acceptance:
+      - A
+    verification:
+      - V
+""",
+            )
+            (project / ".hermes/autoforge/system_view.md").unlink()
+            completed = self.run_check(project)
+
+        self.assertNotEqual(completed.returncode, 0)
+        self.assertIn(".hermes/autoforge/system_view.md", completed.stdout)
+
+    def test_rejects_system_view_without_mermaid_style_tokens(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp)
+            write_project(
+                project,
+                features="""features:
+  - id: F001
+    title: Complete feature
+    type: feature
+    depends_on: []
+    acceptance:
+      - A
+    verification:
+      - V
+""",
+            )
+            (project / ".hermes/autoforge/system_view.md").write_text("""# Demo system view
+
+## System boundary
+Inside/outside.
+
+## Main elements
+Elements.
+
+## Component diagram
+```mermaid
+flowchart TD
+  A[A] ==> B[B]
+```
+
+## Data flow
+Flow.
+
+## Integration points
+Integrations.
+
+## Architectural constraints
+Constraints.
+""", encoding="utf-8")
+            completed = self.run_check(project)
+
+        self.assertNotEqual(completed.returncode, 0)
+        self.assertIn("system_view.md must use --> arrows, not ==> arrows", completed.stdout)
+        self.assertIn("system_view.md Mermaid diagrams must include classDef style tokens", completed.stdout)
 
 
 if __name__ == "__main__":

@@ -42,6 +42,7 @@ Files:
 
 ```text
 app_spec.md       Product/spec source of truth
+system_view.md    Visual system elements, boundaries, and data flow
 features.yaml     Small feature list with dependencies and verification steps
 review_policy.md  Gates before a task can be marked done
 worker_prompt.md  Prompt skeleton for a builder worker

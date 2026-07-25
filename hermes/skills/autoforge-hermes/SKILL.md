@@ -138,6 +138,7 @@ Each target project must contain:
 
 ```text
 .hermes/autoforge/app_spec.md
+.hermes/autoforge/system_view.md
 .hermes/autoforge/features.yaml
 .hermes/autoforge/review_policy.md
 .hermes/autoforge/worker_prompt.md
@@ -159,6 +160,27 @@ Minimum sections:
 - Design direction
 - Non-goals
 - Success criteria
+
+### `system_view.md`
+
+Minimum sections:
+
+- System boundary
+- Main elements
+- Component diagram
+- Data flow
+- Integration points
+- Architectural constraints
+
+This file explains what the target project consists of, how its elements connect, where data moves, and which external services or constraints shape implementation. Builders use it to keep feature work consistent with the whole system, not just with isolated task descriptions.
+
+Diagram rules:
+
+- Use Mermaid fenced blocks with `flowchart TD` or `flowchart LR` for component diagrams.
+- Use `-->` for main flows and `-. label .->` for dependencies; never use `==>`.
+- Use light pastel `classDef` fills with colored strokes and `color:#000`.
+- Use Mermaid subgraphs only for real bounded subsystems; keep nesting shallow.
+- If emoji are used in Mermaid labels, prefer HTML entities instead of raw Unicode emoji.
 
 ### `features.yaml`
 
@@ -228,6 +250,7 @@ Use this shape:
   "project": "project-slug",
   "files_written": [
     ".hermes/autoforge/app_spec.md",
+    ".hermes/autoforge/system_view.md",
     ".hermes/autoforge/features.yaml",
     ".hermes/autoforge/review_policy.md",
     ".hermes/autoforge/worker_prompt.md",
@@ -269,6 +292,7 @@ Assigned Kanban task: <task id/title>
 
 Read:
 - .hermes/autoforge/app_spec.md
+- .hermes/autoforge/system_view.md
 - .hermes/autoforge/features.yaml
 - .hermes/autoforge/review_policy.md
 - .hermes/autoforge/worker_prompt.md
@@ -300,6 +324,8 @@ Review completed Kanban task <task id/title> in <absolute path>. Read the spec, 
 Before reporting the spec/import phase complete:
 
 - [ ] `.hermes/autoforge/app_spec.md` exists and states product goal, users, pages, data, security, design, and success criteria.
+- [ ] `.hermes/autoforge/system_view.md` exists and states system boundary, elements, component diagram, data flow, integrations, and constraints.
+- [ ] `system_view.md` has at least one Mermaid diagram, uses `classDef` style tokens, and does not use `==>` arrows.
 - [ ] `.hermes/autoforge/features.yaml` has unique feature IDs.
 - [ ] Every dependency points to an existing feature ID.
 - [ ] Every feature has acceptance criteria and verification steps.

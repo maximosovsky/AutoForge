@@ -66,6 +66,7 @@ A target project using this workflow should contain:
 
 ```text
 .hermes/autoforge/app_spec.md
+.hermes/autoforge/system_view.md
 .hermes/autoforge/features.yaml
 .hermes/autoforge/review_policy.md
 .hermes/autoforge/worker_prompt.md
@@ -75,6 +76,10 @@ A target project using this workflow should contain:
 ### app_spec.md
 
 Product source of truth: goal, users, journeys, screens/routes, data model, permissions, integrations, design direction, non-goals, and success criteria.
+
+### system_view.md
+
+Visual/system source of truth: project boundary, main elements, component diagram, data flow, integration points, and architectural constraints.
 
 ### features.yaml
 
@@ -111,7 +116,7 @@ Machine-readable marker that the spec phase is complete.
 | `hermes/scripts/install-local.sh` | Local installer for the full skill folder. |
 | `.github/workflows/ci.yml` | GitHub Actions validation workflow. |
 | `scripts/check_autoforge_layout.py` | Validates `.hermes/autoforge` project artifacts. |
-| `scripts/scaffold_project.py` | Creates the five `.hermes/autoforge` artifact files for a new target project. |
+| `scripts/scaffold_project.py` | Creates the six `.hermes/autoforge` artifact files for a new target project. |
 | `scripts/import_features_to_kanban.py` | Imports features into Hermes Kanban. |
 | `examples/tiny-notes/.hermes/autoforge/` | Minimal smoke sample. |
 | `tests/` | Unit tests for validator, scaffold, importer, docs, and skill package contract. |

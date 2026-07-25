@@ -4,6 +4,7 @@
   "sample": "tiny-notes",
   "files_written": [
     ".hermes/autoforge/app_spec.md",
+    ".hermes/autoforge/system_view.md",
     ".hermes/autoforge/features.yaml",
     ".hermes/autoforge/review_policy.md",
     ".hermes/autoforge/worker_prompt.md",
