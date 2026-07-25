@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install test dependencies
+        run: python -m pip install --upgrade pyyaml
+
+      - name: Validate Hermes skill package
+        run: python hermes/scripts/validate-skill.py
+
+      - name: Validate sample AutoForge layout
+        run: python scripts/check_autoforge_layout.py examples/tiny-notes
+
+      - name: Dry-run Kanban import plan
+        run: |
+          python scripts/import_features_to_kanban.py examples/tiny-notes \
+            --board autoforge-tiny-notes \
+            --name 'AutoForge Tiny Notes' \
+            --idempotency-prefix autoforge-tiny \
+            --dry-run > /tmp/autoforge-plan.json
+          python -m json.tool /tmp/autoforge-plan.json > /dev/null
+
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -q

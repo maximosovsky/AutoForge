@@ -48,6 +48,7 @@ class HermesSkillProductTests(unittest.TestCase):
             ".hermes/autoforge/status.json",
         ]:
             self.assertIn(artifact, text)
+        self.assertIn('"files_written"', text)
         self.assertRegex(text, re.compile(r"no implementation before (user )?approval", re.I))
         self.assertIn("scripts/import_features_to_kanban.py", text)
 

@@ -109,10 +109,12 @@ Machine-readable marker that the spec phase is complete.
 | `hermes/skills/autoforge-hermes/SKILL.md` | Runtime Hermes skill. |
 | `hermes/scripts/validate-skill.py` | Skill package validator. |
 | `hermes/scripts/install-local.sh` | Local installer for the full skill folder. |
+| `.github/workflows/ci.yml` | GitHub Actions validation workflow. |
 | `scripts/check_autoforge_layout.py` | Validates `.hermes/autoforge` project artifacts. |
+| `scripts/scaffold_project.py` | Creates the five `.hermes/autoforge` artifact files for a new target project. |
 | `scripts/import_features_to_kanban.py` | Imports features into Hermes Kanban. |
 | `examples/tiny-notes/.hermes/autoforge/` | Minimal smoke sample. |
-| `tests/` | Unit tests for importer and skill package contract. |
+| `tests/` | Unit tests for validator, scaffold, importer, docs, and skill package contract. |
 
 ## Smoke Test
 
@@ -132,7 +134,7 @@ Expected:
 ```text
 PASS ... SKILL.md is a valid autoforge-hermes Hermes skill
 PASS examples\tiny-notes has 4 AutoForge-style features and valid dependencies
-Ran 7 tests ... OK
+Ran 15 tests ... OK
 ```
 
 ## Kanban Import
@@ -170,9 +172,9 @@ Completed:
 - Hermes Kanban importer.
 - Reusable Hermes skill package.
 - Public README, install instructions, license, and LLM discovery files.
+- Project scaffold/template generator.
+- CI workflow for validation and tests.
 
 Planned:
 
-- Project scaffold/template generator.
-- CI workflow for validation and tests.
 - Optional dispatcher examples for bounded builder/reviewer workers.

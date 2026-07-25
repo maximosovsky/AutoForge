@@ -4,7 +4,12 @@ This is a small notes repository for mapping AutoForgeAI/autoforge's spec-build-
 
 ## Current contents
 
-- `README.md` — correspondence table and proposed Hermes workflow.
+- `README.md` — public overview and quick start.
+- `ARCHITECTURE.md` — correspondence table and proposed Hermes workflow.
+- `hermes/skills/autoforge-hermes/SKILL.md` — reusable Hermes skill.
+- `scripts/` — layout validator, scaffold script, and Kanban importer.
+- `examples/tiny-notes/` — smoke project with `.hermes/autoforge` artifacts.
+- `tests/` — unit tests for the package and importer.
 
 ## Scope
 

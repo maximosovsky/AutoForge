@@ -91,7 +91,7 @@ Expected results:
 
 ```text
 PASS examples\tiny-notes has 4 AutoForge-style features and valid dependencies
-Ran 7 tests ... OK
+Ran 15 tests ... OK
 ```
 
 </details>
@@ -120,6 +120,7 @@ $HERMES_HOME/skills/software-development/autoforge-hermes
 | `hermes/skills/autoforge-hermes/SKILL.md` | Runtime Hermes skill loaded by `/skill autoforge-hermes` or automatic skill matching. |
 | `hermes/scripts/validate-skill.py` | Validates frontmatter, required sections, artifact names, and install contract. |
 | `hermes/scripts/install-local.sh` | Installs the skill folder into the active Hermes home. |
+| `scripts/scaffold_project.py` | Creates the five `.hermes/autoforge` artifact files for a new target project. |
 | `scripts/check_autoforge_layout.py` | Validates a target project's `.hermes/autoforge` artifact layout. |
 | `scripts/import_features_to_kanban.py` | Imports `features.yaml` into Hermes Kanban with dependencies. |
 | `examples/tiny-notes/.hermes/autoforge/` | Minimal smoke project demonstrating the artifact contract. |
@@ -178,10 +179,14 @@ AutoForge/
 │           └── worker_prompt.md
 ├── scripts/
 │   ├── check_autoforge_layout.py
-│   └── import_features_to_kanban.py
+│   ├── import_features_to_kanban.py
+│   └── scaffold_project.py
 └── tests/
+    ├── test_check_autoforge_layout.py
     ├── test_hermes_skill_product.py
-    └── test_import_features_to_kanban.py
+    ├── test_import_features_to_kanban.py
+    ├── test_public_repo_docs.py
+    └── test_scaffold_project.py
 ```
 
 </details>
@@ -196,8 +201,8 @@ AutoForge/
 - [x] Import `features.yaml` into Hermes Kanban.
 - [x] Package the workflow as a reusable Hermes skill.
 - [x] Add public README, install path, license, and LLM discovery files.
-- [ ] Add a generated project template command or scaffold script.
-- [ ] Add CI for validation and unit tests.
+- [x] Add a generated project template command or scaffold script.
+- [x] Add CI for validation and unit tests.
 - [ ] Add optional dispatcher examples for bounded builder/reviewer workers.
 
 ---

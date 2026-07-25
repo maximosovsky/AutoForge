@@ -230,7 +230,8 @@ Use this shape:
     ".hermes/autoforge/app_spec.md",
     ".hermes/autoforge/features.yaml",
     ".hermes/autoforge/review_policy.md",
-    ".hermes/autoforge/worker_prompt.md"
+    ".hermes/autoforge/worker_prompt.md",
+    ".hermes/autoforge/status.json"
   ],
   "feature_count": 8
 }

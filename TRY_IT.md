@@ -56,6 +56,15 @@ python scripts/check_autoforge_layout.py examples/tiny-notes
 
 Expected: `PASS`.
 
+To create the same artifact skeleton for a new project:
+
+```bash
+python scripts/scaffold_project.py examples/my-app \
+  --name "My App" \
+  --goal "Describe the product goal in one sentence."
+python scripts/check_autoforge_layout.py examples/my-app
+```
+
 ## 2. Import features into a Hermes Kanban board
 
 This proves the AutoForge feature list can be represented in Hermes Kanban. Use the importer so the process is repeatable and not a hand-written sequence of `kanban create` calls.
@@ -98,10 +107,8 @@ Expected: Hermes should summarize `INFRA-001 → F001/F002/F003` and mention lin
 
 ## 4. What a full run would add later
 
-A real Hermes AutoForge implementation would add:
+This repository already includes the reusable `autoforge-hermes` skill, a validator, a scaffold script, and a Kanban importer. Later iterations may add:
 
-- a reusable `autoforge-hermes` skill;
-- a parser/importer that imports `features.yaml` into Kanban automatically (`scripts/import_features_to_kanban.py` provides the first smoke implementation);
 - dedicated worker profiles: `autoforge-initializer`, `autoforge-builder`, `autoforge-reviewer`, `autoforge-tester`;
 - a dispatcher or cron/kanban loop that runs bounded workers;
 - final release/review gates.
