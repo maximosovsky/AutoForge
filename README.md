@@ -120,9 +120,10 @@ $HERMES_HOME/skills/software-development/autoforge-hermes
 | `hermes/skills/autoforge-hermes/SKILL.md` | Runtime Hermes skill loaded by `/skill autoforge-hermes` or automatic skill matching. |
 | `hermes/scripts/validate-skill.py` | Validates frontmatter, required sections, artifact names, and install contract. |
 | `hermes/scripts/install-local.sh` | Installs the skill folder into the active Hermes home. |
-| `scripts/scaffold_project.py` | Creates the six `.hermes/autoforge` artifact files for a new target project. |
+| `scripts/scaffold_project.py` | Creates the gated `.hermes/autoforge` artifact files for a new target project. |
 | `scripts/check_autoforge_layout.py` | Validates a target project's `.hermes/autoforge` artifact layout. |
-| `scripts/import_features_to_kanban.py` | Imports `features.yaml` into Hermes Kanban with dependencies. |
+| `scripts/import_features_to_kanban.py` | Imports `features.yaml` into Hermes Kanban with dependencies and marks `approval.json.kanban_imported`. |
+| `scripts/autoforge_preflight.py` | Fail-closed build gate: requires task id, approvals, Kanban import, and blocks source edits before approval. |
 | `examples/tiny-notes/.hermes/autoforge/` | Minimal smoke project demonstrating the artifact contract. |
 
 The core workflow:
@@ -131,9 +132,12 @@ The core workflow:
 idea
 └── app_spec.md
     ├── system_view.md
+    ├── design_reference.md / visual_parity_checklist.md
+    ├── approval.json
     └── features.yaml
-        ├── validate layout/dependencies/system view
+        ├── validate layout/dependencies/system view/design gates
         ├── import to Hermes Kanban
+        ├── run autoforge_preflight.py for one approved task
         └── builders/reviewers work one verified task at a time
 ```
 
@@ -175,13 +179,17 @@ AutoForge/
 │       └── .hermes/autoforge/
 │           ├── app_spec.md
 │           ├── system_view.md
+│           ├── design_reference.md
+│           ├── visual_parity_checklist.md
 │           ├── features.yaml
 │           ├── review_policy.md
+│           ├── approval.json
 │           ├── status.json
 │           └── worker_prompt.md
 ├── scripts/
 │   ├── check_autoforge_layout.py
 │   ├── import_features_to_kanban.py
+│   ├── autoforge_preflight.py
 │   └── scaffold_project.py
 └── tests/
     ├── test_check_autoforge_layout.py
@@ -218,6 +226,7 @@ Keep the workflow spec-first, avoid copying implementation code from upstream Au
 ```bash
 python hermes/scripts/validate-skill.py
 python scripts/check_autoforge_layout.py examples/tiny-notes
+python scripts/autoforge_preflight.py examples/tiny-notes --task F001 --require-build-approval
 python -m unittest discover -s tests -q
 ```
 

@@ -8,6 +8,9 @@
     ".hermes/autoforge/features.yaml",
     ".hermes/autoforge/review_policy.md",
     ".hermes/autoforge/worker_prompt.md",
+    ".hermes/autoforge/design_reference.md",
+    ".hermes/autoforge/visual_parity_checklist.md",
+    ".hermes/autoforge/approval.json",
     ".hermes/autoforge/status.json"
   ],
   "feature_count": 4

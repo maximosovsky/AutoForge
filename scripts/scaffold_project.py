@@ -182,6 +182,48 @@ sequenceDiagram
 """
 
 
+
+def design_reference() -> str:
+    return """# Design reference
+
+Approved visual source: TODO — name the exact file, commit, screenshot, URL, or folder that is the visual source of truth before implementation.
+
+Do not redesign.
+Do not simplify visible UI.
+Architecture and performance work must preserve visible parity unless the user explicitly approves a deviation.
+"""
+
+
+def visual_parity_checklist() -> str:
+    return """# Visual parity checklist
+
+Every UI task must provide evidence for:
+
+- Reference screenshot path.
+- Candidate screenshot path.
+- Visible differences list.
+- Browser console result.
+- User approval for any visible deviation.
+
+No screenshot evidence means the UI task is not complete.
+"""
+
+
+def approval_json() -> str:
+    return json.dumps(
+        {
+            "spec_approved": False,
+            "design_reference_approved": False,
+            "kanban_imported": False,
+            "implementation_allowed": False,
+            "approved_by_user": None,
+            "approved_at": None,
+        },
+        ensure_ascii=False,
+        indent=2,
+    ) + "\n"
+
+
 def review_policy() -> str:
     return """# Review policy
 
@@ -221,9 +263,12 @@ def scaffold(project_dir: Path, name: str, goal: str, *, force: bool = False) ->
     files = {
         "app_spec.md": app_spec(name, goal),
         "system_view.md": system_view(name),
+        "design_reference.md": design_reference(),
+        "visual_parity_checklist.md": visual_parity_checklist(),
         "features.yaml": features_yaml(),
         "review_policy.md": review_policy(),
         "worker_prompt.md": worker_prompt(),
+        "approval.json": approval_json(),
     }
     written: list[str] = []
     for filename, content in files.items():

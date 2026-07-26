@@ -43,15 +43,20 @@ class HermesSkillProductTests(unittest.TestCase):
         for artifact in [
             ".hermes/autoforge/app_spec.md",
             ".hermes/autoforge/system_view.md",
+            ".hermes/autoforge/design_reference.md",
+            ".hermes/autoforge/visual_parity_checklist.md",
             ".hermes/autoforge/features.yaml",
             ".hermes/autoforge/review_policy.md",
             ".hermes/autoforge/worker_prompt.md",
+            ".hermes/autoforge/approval.json",
             ".hermes/autoforge/status.json",
         ]:
             self.assertIn(artifact, text)
         self.assertIn('"files_written"', text)
         self.assertRegex(text, re.compile(r"no implementation before (user )?approval", re.I))
         self.assertIn("scripts/import_features_to_kanban.py", text)
+        self.assertIn("scripts/autoforge_preflight.py", text)
+        self.assertIn("Do not redesign", text)
 
     def test_install_and_validation_scripts_are_packaged(self):
         install = INSTALL_SCRIPT.read_text(encoding="utf-8")

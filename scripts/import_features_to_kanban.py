@@ -207,6 +207,16 @@ def import_to_kanban(project_dir: Path, board: str, board_name: str, idempotency
     return {"board": board, "tasks": task_ids, "linked": linked, "link_errors": link_errors}
 
 
+def mark_kanban_imported(project_dir: Path) -> None:
+    approval_path = project_dir / ".hermes" / "autoforge" / "approval.json"
+    if not approval_path.exists():
+        return
+    approval = json.loads(approval_path.read_text(encoding="utf-8"))
+    if isinstance(approval, dict):
+        approval["kanban_imported"] = True
+        approval_path.write_text(json.dumps(approval, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Import .hermes/autoforge/features.yaml into Hermes Kanban")
     parser.add_argument("project_dir", help="Project directory containing .hermes/autoforge/features.yaml")
@@ -227,6 +237,7 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(plan, ensure_ascii=False, indent=2))
         return 0
     result = import_to_kanban(project_dir, board=args.board, board_name=args.name, idempotency_prefix=prefix)
+    mark_kanban_imported(project_dir)
     if args.json:
         print(json.dumps(result, ensure_ascii=False, indent=2))
     else:

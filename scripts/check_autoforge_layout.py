@@ -11,10 +11,20 @@ except Exception:  # pragma: no cover
 REQUIRED = [
     ".hermes/autoforge/app_spec.md",
     ".hermes/autoforge/system_view.md",
+    ".hermes/autoforge/design_reference.md",
+    ".hermes/autoforge/visual_parity_checklist.md",
     ".hermes/autoforge/features.yaml",
     ".hermes/autoforge/review_policy.md",
     ".hermes/autoforge/worker_prompt.md",
+    ".hermes/autoforge/approval.json",
     ".hermes/autoforge/status.json",
+]
+
+REQUIRED_APPROVAL_FLAGS = [
+    "spec_approved",
+    "design_reference_approved",
+    "kanban_imported",
+    "implementation_allowed",
 ]
 
 REQUIRED_APP_SPEC_SECTIONS = [
@@ -68,7 +78,7 @@ def load_yaml(path: Path):
             in_depends_on, in_acceptance, in_verification = False, False, True
         elif current and stripped.startswith("- "):
             value = stripped[2:].strip()
-            if in_depends_on and value.startswith(("INFRA-", "F")):
+            if in_depends_on:
                 current["depends_on"].append(value)
             elif in_acceptance:
                 current["acceptance"].append(value)
@@ -180,6 +190,39 @@ def status_errors(path: Path, feature_count: int) -> list[str]:
     return errors
 
 
+
+
+def approval_errors(path: Path) -> list[str]:
+    try:
+        approval = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        return [f"approval.json is invalid JSON: {exc}"]
+    errors: list[str] = []
+    for flag in REQUIRED_APPROVAL_FLAGS:
+        if flag not in approval:
+            errors.append(f"approval.json missing {flag}")
+        elif not isinstance(approval[flag], bool):
+            errors.append(f"approval.json {flag} must be boolean")
+    return errors
+
+
+def design_reference_errors(path: Path) -> list[str]:
+    text = path.read_text(encoding="utf-8")
+    errors: list[str] = []
+    for required in ["Approved visual source", "Do not redesign", "Do not simplify visible UI"]:
+        if required not in text:
+            errors.append(f"design_reference.md must include: {required}")
+    return errors
+
+
+def visual_parity_errors(path: Path) -> list[str]:
+    text = path.read_text(encoding="utf-8").lower()
+    errors: list[str] = []
+    for required in ["reference screenshot", "candidate screenshot", "visible differences", "user approval"]:
+        if required not in text:
+            errors.append(f"visual_parity_checklist.md must require {required}")
+    return errors
+
 def main() -> int:
     root = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(".")
     missing = [p for p in REQUIRED if not (root / p).exists()]
@@ -196,6 +239,9 @@ def main() -> int:
     errors.extend(feature_list_errors(features))
     errors.extend(app_spec_errors(root / ".hermes/autoforge/app_spec.md"))
     errors.extend(system_view_errors(root / ".hermes/autoforge/system_view.md"))
+    errors.extend(design_reference_errors(root / ".hermes/autoforge/design_reference.md"))
+    errors.extend(visual_parity_errors(root / ".hermes/autoforge/visual_parity_checklist.md"))
+    errors.extend(approval_errors(root / ".hermes/autoforge/approval.json"))
     errors.extend(status_errors(root / ".hermes/autoforge/status.json", len(features)))
     if errors:
         return fail(errors)

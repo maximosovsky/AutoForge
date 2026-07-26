@@ -86,5 +86,24 @@ class ImportFeaturesToKanbanTests(unittest.TestCase):
         self.assertEqual(plan["tasks"][1]["idempotency_key"], "demo-F001")
 
 
+    def test_mark_kanban_imported_updates_approval_json(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            spec_dir = root / ".hermes" / "autoforge"
+            spec_dir.mkdir(parents=True)
+            approval_path = spec_dir / "approval.json"
+            approval_path.write_text(json.dumps({
+                "spec_approved": True,
+                "design_reference_approved": True,
+                "kanban_imported": False,
+                "implementation_allowed": False,
+            }), encoding="utf-8")
+
+            importer.mark_kanban_imported(root)
+
+            approval = json.loads(approval_path.read_text(encoding="utf-8"))
+        self.assertIs(approval["kanban_imported"], True)
+
+
 if __name__ == "__main__":
     unittest.main()

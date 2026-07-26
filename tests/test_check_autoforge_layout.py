@@ -76,6 +76,28 @@ Constraints.
     (spec_dir / "features.yaml").write_text(features, encoding="utf-8")
     (spec_dir / "review_policy.md").write_text("# Review policy\n\n- tests pass\n", encoding="utf-8")
     (spec_dir / "worker_prompt.md").write_text("# Worker prompt\n", encoding="utf-8")
+    (spec_dir / "design_reference.md").write_text("""# Design reference
+
+Approved visual source: test fixture.
+
+Do not redesign.
+Do not simplify visible UI.
+""", encoding="utf-8")
+    (spec_dir / "visual_parity_checklist.md").write_text("""# Visual parity checklist
+
+- Reference screenshot must be captured.
+- Candidate screenshot must be captured.
+- Visible differences must be listed.
+- User approval is required for deviations.
+""", encoding="utf-8")
+    (spec_dir / "approval.json").write_text(json.dumps({
+        "spec_approved": False,
+        "design_reference_approved": False,
+        "kanban_imported": False,
+        "implementation_allowed": False,
+        "approved_by_user": None,
+        "approved_at": None,
+    }), encoding="utf-8")
     payload = status or {
         "status": "complete",
         "version": 1,
@@ -83,9 +105,12 @@ Constraints.
         "files_written": [
             ".hermes/autoforge/app_spec.md",
             ".hermes/autoforge/system_view.md",
+            ".hermes/autoforge/design_reference.md",
+            ".hermes/autoforge/visual_parity_checklist.md",
             ".hermes/autoforge/features.yaml",
             ".hermes/autoforge/review_policy.md",
             ".hermes/autoforge/worker_prompt.md",
+            ".hermes/autoforge/approval.json",
             ".hermes/autoforge/status.json",
         ],
         "feature_count": 1,
@@ -147,9 +172,12 @@ class CheckAutoForgeLayoutTests(unittest.TestCase):
                     "files_written": [
                         ".hermes/autoforge/app_spec.md",
                         ".hermes/autoforge/system_view.md",
+                        ".hermes/autoforge/design_reference.md",
+                        ".hermes/autoforge/visual_parity_checklist.md",
                         ".hermes/autoforge/features.yaml",
                         ".hermes/autoforge/review_policy.md",
                         ".hermes/autoforge/worker_prompt.md",
+                        ".hermes/autoforge/approval.json",
                         ".hermes/autoforge/status.json",
                     ],
                     "feature_count": 2,
@@ -180,9 +208,12 @@ class CheckAutoForgeLayoutTests(unittest.TestCase):
                     "files_written": [
                         ".hermes/autoforge/app_spec.md",
                         ".hermes/autoforge/system_view.md",
+                        ".hermes/autoforge/design_reference.md",
+                        ".hermes/autoforge/visual_parity_checklist.md",
                         ".hermes/autoforge/features.yaml",
                         ".hermes/autoforge/review_policy.md",
                         ".hermes/autoforge/worker_prompt.md",
+                        ".hermes/autoforge/approval.json",
                         ".hermes/autoforge/status.json",
                     ],
                     "feature_count": 99,

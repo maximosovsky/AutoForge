@@ -47,11 +47,13 @@ The default contract is strict:
 1. **Ask product questions first** unless the user already supplied enough detail.
 2. **Write the AutoForge artifact set** under `.hermes/autoforge/`.
 3. **Validate artifacts** before importing or implementing.
-4. **Import `features.yaml` into Hermes Kanban** as the durable feature database.
-5. **Stop before implementation** and ask for approval unless the user explicitly authorized build work.
-6. **Builders work one ready feature at a time** and run all relevant checks.
-7. **Reviewers verify independently** and create/block regression tasks when evidence fails.
-8. **No implementation before approval.** Do not write application source code during the spec/import phase.
+4. **Require approval gates** in `.hermes/autoforge/approval.json`; missing approval fails closed.
+5. **Import `features.yaml` into Hermes Kanban** as the durable feature database.
+6. **Run `scripts/autoforge_preflight.py <project-dir> --task <feature-id> --require-build-approval` before source edits.**
+7. **Stop before implementation** unless approval gates and preflight pass.
+8. **Builders work one ready feature at a time** and run all relevant checks.
+9. **Reviewers verify independently** and create/block regression tasks when evidence fails.
+10. **No implementation before approval.** Do not write application source code during the spec/import phase.
 
 ## Phase Workflow
 
@@ -139,9 +141,12 @@ Each target project must contain:
 ```text
 .hermes/autoforge/app_spec.md
 .hermes/autoforge/system_view.md
+.hermes/autoforge/design_reference.md
+.hermes/autoforge/visual_parity_checklist.md
 .hermes/autoforge/features.yaml
 .hermes/autoforge/review_policy.md
 .hermes/autoforge/worker_prompt.md
+.hermes/autoforge/approval.json
 .hermes/autoforge/status.json
 ```
 
@@ -181,6 +186,31 @@ Diagram rules:
 - Use light pastel `classDef` fills with colored strokes and `color:#000`.
 - Use Mermaid subgraphs only for real bounded subsystems; keep nesting shallow.
 - If emoji are used in Mermaid labels, prefer HTML entities instead of raw Unicode emoji.
+
+### `design_reference.md`
+
+Required for UI/product work. It must name the exact approved visual source and include the hard rules `Do not redesign` and `Do not simplify visible UI`. Architecture/performance work must preserve this reference unless the user approves a deviation.
+
+### `visual_parity_checklist.md`
+
+Required for UI/product work. It must require a reference screenshot, candidate screenshot, visible differences list, browser console result, and user approval for deviations.
+
+### `approval.json`
+
+Machine-readable gate file. Scaffolded projects start locked:
+
+```json
+{
+  "spec_approved": false,
+  "design_reference_approved": false,
+  "kanban_imported": false,
+  "implementation_allowed": false,
+  "approved_by_user": null,
+  "approved_at": null
+}
+```
+
+Builders must not edit implementation files while `implementation_allowed` is false. `autoforge_preflight.py --require-build-approval` enforces this.
 
 ### `features.yaml`
 
@@ -251,9 +281,12 @@ Use this shape:
   "files_written": [
     ".hermes/autoforge/app_spec.md",
     ".hermes/autoforge/system_view.md",
+    ".hermes/autoforge/design_reference.md",
+    ".hermes/autoforge/visual_parity_checklist.md",
     ".hermes/autoforge/features.yaml",
     ".hermes/autoforge/review_policy.md",
     ".hermes/autoforge/worker_prompt.md",
+    ".hermes/autoforge/approval.json",
     ".hermes/autoforge/status.json"
   ],
   "feature_count": 8
@@ -297,7 +330,7 @@ Read:
 - .hermes/autoforge/review_policy.md
 - .hermes/autoforge/worker_prompt.md
 
-Work only on the assigned feature. Implement the smallest complete change that satisfies its acceptance criteria. Run all applicable gates. Commit only verified changes if commits are authorized. Mark the Kanban task complete only with evidence. If blocked, mark the task blocked with the reason.
+Before source edits, run `python scripts/autoforge_preflight.py <project-dir> --task <feature-id> --require-build-approval` from the AutoForge repository and stop if it fails. Work only on the assigned feature. Implement the smallest complete change that satisfies its acceptance criteria. Run all applicable gates. Commit only verified changes if commits are authorized. Mark the Kanban task complete only with evidence. If blocked, mark the task blocked with the reason.
 ```
 
 ## Reviewer Worker Prompt
@@ -326,6 +359,9 @@ Before reporting the spec/import phase complete:
 - [ ] `.hermes/autoforge/app_spec.md` exists and states product goal, users, pages, data, security, design, and success criteria.
 - [ ] `.hermes/autoforge/system_view.md` exists and states system boundary, elements, component diagram, data flow, integrations, and constraints.
 - [ ] `system_view.md` has at least one Mermaid diagram, uses `classDef` style tokens, and does not use `==>` arrows.
+- [ ] `.hermes/autoforge/design_reference.md` names the approved visual source and bans redesign/simplification.
+- [ ] `.hermes/autoforge/visual_parity_checklist.md` requires reference screenshot, candidate screenshot, visible differences, and user approval.
+- [ ] `.hermes/autoforge/approval.json` exists with boolean approval gates.
 - [ ] `.hermes/autoforge/features.yaml` has unique feature IDs.
 - [ ] Every dependency points to an existing feature ID.
 - [ ] Every feature has acceptance criteria and verification steps.
@@ -335,4 +371,6 @@ Before reporting the spec/import phase complete:
 - [ ] `python scripts/check_autoforge_layout.py <project-dir>` returns `PASS`.
 - [ ] Kanban dry-run shows expected tasks and links.
 - [ ] Kanban import succeeds or reports only understood idempotent warnings.
+- [ ] `approval.json.kanban_imported` is true after import.
+- [ ] Before source edits, `python scripts/autoforge_preflight.py <project-dir> --task <feature-id> --require-build-approval` returns `PASS`.
 - [ ] No implementation was started before user approval.
